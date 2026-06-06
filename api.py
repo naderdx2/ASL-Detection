@@ -32,7 +32,7 @@ from PIL import Image
 # SETTINGS
 # =========================
 MODEL_PATH  = "models/best_asl_model.pth"
-LABELS_PATH = "models/labels.json"
+LABELS_PATH = "labels.json"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # =========================
