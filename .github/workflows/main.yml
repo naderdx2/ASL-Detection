@@ -23,7 +23,7 @@ jobs:
       - name: Create dummy model files
         run: |
           mkdir -p models
-          echo '{"0": "A", "1": "B"}' > labels.json
+          echo '{"0": "A", "1": "B", "2": "C"}' > labels.json
           python -c "
           import torch
           import torch.nn as nn
@@ -38,7 +38,7 @@ jobs:
                   )
               def forward(self, x):
                   return self.network(x)
-          model = ASLModel(2)
+          model = ASLModel(3)
           torch.save({'model_state_dict': model.state_dict(), 'num_classes': 2}, 'models/best_asl_model.pth')
           "
       - name: Run tests
