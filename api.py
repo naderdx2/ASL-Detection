@@ -115,10 +115,10 @@ def predict_from_landmarks(landmark_array: np.ndarray) -> dict:
     pred_idx    = int(np.argmax(probs))
     confidence  = float(probs[pred_idx])
     top3_idx    = np.argsort(probs)[::-1][:3]
-    top3        = [{"letter": labels[i], "confidence": float(probs[i])} for i in top3_idx]
+    top3 = [{"letter": labels[str(i)], "confidence": float(probs[i])} for i in top3_idx]
 
     return {
-        "predicted_letter": labels[pred_idx],
+        "predicted_letter": labels[str(pred_idx)],
         "confidence": round(confidence, 4),
         "top3": top3,
         "device": str(DEVICE),
