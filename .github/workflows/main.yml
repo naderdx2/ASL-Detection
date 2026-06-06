@@ -39,7 +39,7 @@ jobs:
               def forward(self, x):
                   return self.network(x)
           model = ASLModel(3)
-          torch.save({'model_state_dict': model.state_dict(), 'num_classes': 2}, 'models/best_asl_model.pth')
+          torch.save({'model_state_dict': model.state_dict(), 'num_classes': 3}, 'models/best_asl_model.pth')
           "
       - name: Run tests
         run: pytest tests/ -v
@@ -50,7 +50,32 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
       - uses: docker/setup-buildx-action@v2
+      - name: Create dummy model files for Docker
+        run: |
+          pip install torch==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu
+          mkdir -p models
+          echo '{"0": "A", "1": "B", "2": "C"}' > labels.json
+          python -c "
+          import torch
+          import torch.nn as nn
+          class ASLModel(nn.Module):
+              def __init__(self, num_classes):
+                  super().__init__()
+                  self.network = nn.Sequential(
+                      nn.Linear(63, 256), nn.ReLU(), nn.BatchNorm1d(256), nn.Dropout(0.3),
+                      nn.Linear(256, 128), nn.ReLU(), nn.BatchNorm1d(128), nn.Dropout(0.3),
+                      nn.Linear(128, 64), nn.ReLU(), nn.Dropout(0.2),
+                      nn.Linear(64, num_classes)
+                  )
+              def forward(self, x):
+                  return self.network(x)
+          model = ASLModel(3)
+          torch.save({'model_state_dict': model.state_dict(), 'num_classes': 3}, 'models/best_asl_model.pth')
+          "
       - name: Build Docker image
         run: docker build -t asl-detection-api .
 
